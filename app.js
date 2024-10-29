@@ -3,12 +3,14 @@ const rateLimiter = require('./middleware/rateLimiter');
 const transactionRoutes = require('./routes/transactionRoutes');
 const logger = require('./utils/logger')
 const connectDB = require('./config/db');
+const cors = require('cors')
 require('dotenv').config();
 const WebSocket  =  require('ws')
 const http = require('http')
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+app.use(cors());
 app.use(express.json());
 
 app.use(rateLimiter);
@@ -22,7 +24,7 @@ wss.on('connection', (ws) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 connectDB();
 

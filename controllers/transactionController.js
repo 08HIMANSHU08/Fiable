@@ -2,6 +2,13 @@ const Transaction = require('../models/Transaction');
 const logger = require('../utils/logger'); 
 const { wss } = require('../app'); 
 
+const test = async(req,res)=>{
+  try{
+    res.send("Hello world")
+  } catch(err){
+    logger.error(err);
+  }
+}
 const getTransactions = async (req, res) => {
   const { page = 2, limit = 10, type, status, startDate, endDate } = req.query;
   const filter = {};
@@ -35,18 +42,11 @@ const getTransactionById = async (req, res) => {
 const recentTransaction = async (req, res) => {
   const limit = 10;
   try {
-      // Fetch the most recent transactions
       const recentTransactions = await Transaction.find({})
           .sort({ date: -1 })
           .limit(limit);
-
-      // Log the successful fetch
       logger.info(`Fetched recent transactions`);
-
-      // Respond to the HTTP request
-      // res.status(200).json(recentTransactions);
-
-      // Broadcast recent transactions to WebSocket clients
+      res.status(200).json(recentTransactions);
       broadcastRecentTransactions(recentTransactions);
   } catch (error) {
       logger.error(`Error fetching recent transaction: ${error.message}`);
@@ -64,7 +64,6 @@ const broadcastRecentTransactions = (recentTransactions) => {
   });
   } catch(error){
     logger.error(`WebScoket Failed: ${error.message}`);
-      res.status(500).json({ message: 'Server error', error: error.message });
   }
  
 };
@@ -73,5 +72,6 @@ module.exports = {
   getTransactions,
   getTransactionById,
   recentTransaction,
+  test
 };
 
